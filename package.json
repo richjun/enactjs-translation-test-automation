@@ -43,6 +43,7 @@
     "react-dom": "^16.4.2"
   },
   "keywords": [
+    "translation",
     "test automation",
     "enactjs"
   ],
