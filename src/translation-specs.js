@@ -1,16 +1,45 @@
 import App from './App';
 import React from 'react';
 import {mount} from 'enzyme';
+import xlsx from 'node-xlsx';
 
-describe("Trans Test!", function() {
-    it("Trans Test 1", function() {
-        const content = 'Welcome to IDB DUO!';
-        const expected = "전자 칠판 DUO에 오신 것을 환영합니다!";
-		const app = mount(
-            <App locale={'ko-KR'} contents={content} />
-		);
-        const actual = app.text();
+const path = require('path');
+const loadJsonFile = require('load-json-file');
+const langCodes = loadJsonFile.sync(path.resolve('src', 'languageCode.json'));
+const excelPath = path.resolve('excel', 'mms.xlsx');
+const totalData = xlsx.parse(excelPath)[0];
 
-        expect(expected).toEqual(actual);
-    });
+let titleIndex = {};
+const titleRow = totalData.data[0].filter((title, index) => {
+    if (langCodes[title]) {
+        titleIndex[title] = index;
+        return true;
+    } else if (title  === 'Basic String'){
+        titleIndex[title] = index;
+        return false;
+    } else {
+        return false;
+    }
+});
+
+describe.each(titleRow)('%s', (title)  =>{
+    let basicString = '';
+    let expected = '';
+    let received = ''
+    let app = null;
+
+    // 'Basic String' col index is 0
+    for (let i=1; i<totalData.data.length; i++) {
+        test(expected, () => {
+            basicString = totalData.data[i][titleIndex['Basic String']];
+            expected = totalData.data[i][titleIndex[title]];
+
+            app = mount(
+                <App locale={langCodes[title]} contents={basicString} />
+            );
+            received = app.text();
+
+            expect(received).toEqual(expected);
+        });
+    }
 });
