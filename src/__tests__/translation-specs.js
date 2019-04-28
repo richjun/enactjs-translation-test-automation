@@ -1,4 +1,4 @@
-import App from './App';
+import App from '../App/App';
 import React from 'react';
 import {mount} from 'enzyme';
 import xlsx from 'node-xlsx';
