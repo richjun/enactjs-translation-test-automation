@@ -3,6 +3,7 @@ import React from 'react';
 import {mount} from 'enzyme';
 import xlsx from 'node-xlsx';
 
+const env = require('dotenv').config().parsed;
 const path = require('path');
 const loadJsonFile = require('load-json-file');
 const langCodes = loadJsonFile.sync(path.resolve('src', 'languageCode.json'));
@@ -22,6 +23,14 @@ const titleRow = totalData.data[0].filter((title, index) => {
     }
 });
 
+const applyIgnorePattern = (text) => {
+    if (env.IGNORE_PERIOD && text.lastIndexOf('.') > 0) {
+        return text.substr(0, text.lastIndexOf('.'));
+    } else {
+        return text;
+    }
+}
+
 describe.each(titleRow)('%s', (title)  =>{
     let basicString = '';
     let expected = '';
@@ -31,13 +40,13 @@ describe.each(titleRow)('%s', (title)  =>{
     // 'Basic String' col index is 0
     for (let i=1; i<totalData.data.length; i++) {
         test(expected, () => {
-            basicString = totalData.data[i][titleIndex['Basic String']];
-            expected = totalData.data[i][titleIndex[title]];
+            basicString = applyIgnorePattern(totalData.data[i][titleIndex['Basic String']]);
+            expected = applyIgnorePattern(totalData.data[i][titleIndex[title]]);
 
             app = mount(
                 <App locale={langCodes[title]} contents={basicString} />
             );
-            received = app.text();
+            received = applyIgnorePattern(app.text());
 
             expect(received).toEqual(expected);
         });
