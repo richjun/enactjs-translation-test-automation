@@ -5,12 +5,13 @@ import $L from '@enact/i18n/$L';
 
 const App = kind({
 	name: 'App',
-
-	render: (props) => (
-		<div {...props}>
-			{$L(props.contents)}
-		</div>
-	)
+	render: (props) => {
+		return (
+			<div {...props}>
+				{$L(props.contents)}
+			</div>
+		);
+	}
 });
 
 export default MoonstoneDecorator(App);

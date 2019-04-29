@@ -24,29 +24,33 @@ const titleRow = totalData.data[0].filter((title, index) => {
 });
 
 const applyIgnorePattern = (text) => {
+    let ret = text;
     if (env.IGNORE_PERIOD && text.lastIndexOf('.') > 0 && text.lastIndexOf('.') === text.length-1) {
-        return text.substr(0, text.lastIndexOf('.'));
-    } else {
-        return text;
+        ret =  text.substr(0, text.lastIndexOf('.'));
     }
+
+    if (env.TRIM_ON) {
+        ret = ret.trim();
+    }
+
+    return ret;
 }
 
 describe.each(titleRow)('%s', (title)  =>{
     let basicString = '';
     let expected = '';
     let received = ''
-    let app = null;
 
     // 'Basic String' col index is 0
     for (let i=1; i<totalData.data.length; i++) {
         test(totalData.data[i][titleIndex['Basic String']], () => {
             basicString = applyIgnorePattern(totalData.data[i][titleIndex['Basic String']]);
             expected = applyIgnorePattern(totalData.data[i][titleIndex[title]]);
-
-            app = mount(
-                <App locale={langCodes[title]} contents={basicString} />
+            received = applyIgnorePattern(
+                mount(
+                    <App locale={langCodes[title]} contents={basicString} />
+                ).text()
             );
-            received = applyIgnorePattern(app.text());
 
             expect(received).toEqual(expected);
         });
