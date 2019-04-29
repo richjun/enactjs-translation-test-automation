@@ -1,4 +1,4 @@
-import App from '../App/App';
+import App from './App';
 import React from 'react';
 import {mount} from 'enzyme';
 import xlsx from 'node-xlsx';
@@ -24,7 +24,7 @@ const titleRow = totalData.data[0].filter((title, index) => {
 });
 
 const applyIgnorePattern = (text) => {
-    if (env.IGNORE_PERIOD && text.lastIndexOf('.') > 0) {
+    if (env.IGNORE_PERIOD && text.lastIndexOf('.') > 0 && text.lastIndexOf('.') === text.length-1) {
         return text.substr(0, text.lastIndexOf('.'));
     } else {
         return text;
@@ -39,7 +39,7 @@ describe.each(titleRow)('%s', (title)  =>{
 
     // 'Basic String' col index is 0
     for (let i=1; i<totalData.data.length; i++) {
-        test(expected, () => {
+        test(totalData.data[i][titleIndex['Basic String']], () => {
             basicString = applyIgnorePattern(totalData.data[i][titleIndex['Basic String']]);
             expected = applyIgnorePattern(totalData.data[i][titleIndex[title]]);
 
