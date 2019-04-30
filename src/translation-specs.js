@@ -29,6 +29,10 @@ const applyIgnorePattern = (text) => {
         ret =  text.substr(0, text.lastIndexOf('.'));
     }
 
+    if (env.IGNORE_PERIOD && text.lastIndexOf('。') > 0 && text.lastIndexOf('。') === text.length-1) {
+        ret =  text.substr(0, text.lastIndexOf('。'));
+    }
+
     if (env.TRIM_ON) {
         ret = ret.trim();
     }
@@ -37,20 +41,29 @@ const applyIgnorePattern = (text) => {
 }
 
 describe.each(titleRow)('%s', (title)  =>{
-    let basicString = '';
+    let originBasicString = '';
+    let ignoredBasicString = '';
+    let received = '';
     let expected = '';
-    let received = ''
 
     // 'Basic String' col index is 0
     for (let i=1; i<totalData.data.length; i++) {
         test(totalData.data[i][titleIndex['Basic String']], () => {
-            basicString = applyIgnorePattern(totalData.data[i][titleIndex['Basic String']]);
+            originBasicString = totalData.data[i][titleIndex['Basic String']];
+            received = mount(
+                    <App locale={langCodes[title]} contents={originBasicString} />
+                ).text();
+
+            // if originBasicString is not translated, try to translate after applying ignore pattern.
+            if (originBasicString === received) {
+                ignoredBasicString = applyIgnorePattern(originBasicString);
+                received =  mount(
+                        <App locale={langCodes[title]} contents={ignoredBasicString} />
+                    ).text();
+            }
+
+            received = applyIgnorePattern(received);
             expected = applyIgnorePattern(totalData.data[i][titleIndex[title]]);
-            received = applyIgnorePattern(
-                mount(
-                    <App locale={langCodes[title]} contents={basicString} />
-                ).text()
-            );
 
             expect(received).toEqual(expected);
         });
