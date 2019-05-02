@@ -46,7 +46,7 @@ describe.each(titleRow)('%s', (title)  =>{
     let received = '';
     let expected = '';
 
-    // 'Basic String' col index is 0
+    // row index for title is 0
     for (let i=1; i<totalData.data.length; i++) {
         test(totalData.data[i][titleIndex['Basic String']], () => {
             originBasicString = totalData.data[i][titleIndex['Basic String']];
